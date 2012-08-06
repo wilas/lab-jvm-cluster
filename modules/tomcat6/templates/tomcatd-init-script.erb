@@ -1,0 +1,143 @@
+#!/bin/bash
+#
+# This shell script takes care of starting and stopping Tomcat
+#
+# chkconfig: 345 80 10
+# description: Jakarta Tomcat Java Servlet/JSP Container
+# processname: tomcatd
+#
+### BEGIN INIT INFO
+# Provides: tomcatd
+# Required-Start: $local_fs $network
+# Required-Stop: $local_fs $network
+# Default-Start: 3 4 5
+# Default-Stop: 0 1 6
+# Description: Tomcat Java Servlet/JSP Container
+# Short-Description: start and stop tomcat
+### END INIT INFO
+
+## Source function library.
+. /etc/rc.d/init.d/functions
+
+# pull in sysconfig settings
+[ -f /etc/sysconfig/tomcatd ] && . /etc/sysconfig/tomcatd
+
+tomcatuser=<%=catalina_user%>
+lockfile=/var/lock/subsys/tomcatd
+shutdownwait=60
+
+export CATALINA_HOME
+export CATALINA_BASE
+export CATALINA_PID
+export JAVA_HOME
+export JAVA_OPTS
+export PATH=$JAVA_HOME/bin:$PATH
+
+# For SELinux we need to use 'runuser' not 'su'
+if [ -x "/sbin/runuser" ]; then
+    SU="/sbin/runuser"
+else
+    SU="/bin/su"
+fi
+
+tomcat_pid() {
+    echo `pgrep -U $tomcatuser -f org.apache.catalina.startup.Bootstrap`
+}
+
+start() {
+    # Check tomcat is already running
+    pid=$(tomcat_pid)
+    if [ -n "$pid" ]
+    then
+        echo "Tomcat is already running (pid: $pid)"
+        return 0
+    fi
+    
+    echo "Starting tomcatd..."
+
+    # Remove pidfile if still around
+    test -f $CATALINA_PID && rm -f ${CATALINA_PID}
+    
+    # Remove lockfile if still around
+    test -f $lockfile && rm -f ${lockfile}
+
+    # Clean work directory
+    rm -rf "$CATALINA_BASE"/work/*
+
+    #ulimit provides control over the resources available to the shell and to processes started by it
+    #maximum number of open file descriptors
+    ulimit -n 100000
+    #sets an environment variable which automatically sets file permissions on newly created files
+    umask 007
+
+    $SU -p -s /bin/sh $tomcatuser -c "$CATALINA_HOME/bin/catalina.sh start"
+
+    RETVAL=$?    
+    [ "$RETVAL" = 0 ] && touch $lockfile
+    echo
+    return $RETVAL
+}
+
+stop() {
+    # Check tomcat is already stopped
+    pid=$(tomcat_pid)
+    if [ ! -n "$pid" ]
+    then
+        echo "Tomcat is already stopped"
+        return 0
+    fi
+
+    echo "Stopping tomcatd..."
+
+    $SU -p -s /bin/sh $tomcatuser -c "$CATALINA_HOME/bin/catalina.sh stop"
+
+    let kwait=$shutdownwait
+    count=0;
+    until [ `ps -p $pid | grep -c $pid` = '0' ] || [ $count -gt $kwait ]
+    do
+      echo -n -e "\nwaiting for processes to exit";
+      sleep 1
+      let count=$count+1;
+    done
+
+    if [ $count -gt $kwait ]; then
+      echo -n -e "\nkilling processes which didn't stop after $shutdownwait seconds"
+      kill -9 $pid
+    fi
+    
+    RETVAL=$?
+    [ $RETVAL = 0 ] && rm -f ${lockfile}
+    echo
+    return $RETVAL
+}
+
+version() {
+    $SU -p -s /bin/sh $tomcatuser -c "$CATALINA_HOME/bin/catalina.sh version"
+    return $?
+}
+
+case "$1" in
+start)
+    start
+    ;;
+stop)
+    stop
+    ;;
+restart)
+    stop
+    start
+    ;;
+status)
+    status -p $CATALINA_PID tomcatd
+    ;;
+version)
+    version
+    ;;
+*)
+    echo "Usage: $0 {start|stop|restart|status|version}."
+    exit 1
+    ;;
+esac
+
+#echo "Mirror, mirror, tell me true: retval is $?" >> /tmp/tomcat
+exit $?

@@ -1,0 +1,10 @@
+CATALINA_HOME=<%= catalina_home %>
+CATALINA_BASE=$CATALINA_HOME
+CATALINA_PID=/var/run/tomcat/tomcatd
+
+JAVA_HOME=<%= jvm_home %>
+JAVA_OPTS="-Dfile.encoding=UTF-8 \
+-XX:+UseConcMarkSweepGC \
+-XX:+UseParNewGC \
+-XX:MaxPermSize=128m \
+-Xms512m -Xmx512m"

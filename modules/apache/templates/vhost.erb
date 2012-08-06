@@ -1,0 +1,42 @@
+<VirtualHost *:80>
+
+    ServerName <%= vhost_domain %>
+    ServerAlias www.<%= vhost_domain %>
+    ServerAdmin admin@<%= vhost_domain %>
+
+    DocumentRoot <%= vhost_root %>
+    ErrorLog logs/<%= vhost_domain %>-error_log
+    CustomLog logs/<%= vhost_domain %>-access_log common
+
+    <Directory /var/www/html/<%= vhost_domain %>>
+        Allow from all
+        Options +Includes +Indexes +FollowSymLinks
+        AllowOverride all
+    </Directory>
+
+    #<Location /test>
+    #    Order allow,deny
+    #    Allow from all
+    #</Location>
+
+    #RewriteEngine On
+    #RewriteRule ^(.*$) https://magellan.kkk.pl$1
+
+</VirtualHost>
+
+#<VirtualHost *:443>
+#    ServerName <%= vhost_domain %>
+#    ServerAlias www.<%= vhost_domain %>
+#    
+#    DocumentRoot <%= vhost_root %>
+
+#    SSLEngine on
+
+#    SSLProtocol -ALL +SSLv3 +TLSv1
+#    SSLCipherSuite ALL:!aNULL:!ADH:!eNULL:!LOW:!EXP:RC4+RSA:+HIGH:+MEDIUM
+
+#    SSLCertificateFile /etc/ssl/current/name.com.crt
+#    SSLCertificateKeyFile /etc/ssl/current/name.com.key
+#    SSLCertificateChainFile /etc/ssl/current/name.com-chain.crt
+
+#</VirtualHost>
