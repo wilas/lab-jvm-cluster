@@ -38,11 +38,22 @@ Firewall {
 class { "basic_firewall": }
 
 #tomcat manage
-class { "tomcat6": }
+$routeid = regsubst($hostname,'([\w]+)([0-9]{2})','\2','G')
+notice ("Mirror, mirror, tell me true: routeid is ${routeid}")
 
-firewall { '100 allow tomcat':
+class { "tomcat6": 
+    jvmroute => "jvm${routeid}",
+}
+
+firewall { '100 allow tomcat http':
     state  => ['NEW'],
     dport  => '8080',
+    proto  => 'tcp',
+    action => accept,
+}
+firewall { '100 allow tomcat ajp':
+    state  => ['NEW'],
+    dport  => '8009',
     proto  => 'tcp',
     action => accept,
 }

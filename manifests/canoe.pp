@@ -6,6 +6,22 @@ class { "install_repos": stage  => "first" }
 class { "basic_package": }
 class { "user::root": }
 
+#hosts:
+host { "$fqdn":
+    ip          => "$ipaddress_eth1",
+    host_aliases => "$hostname",
+}
+
+host { "marlin01.farm":
+    ip          => "77.77.77.161",
+    host_aliases => "marlin01",
+}
+
+host { "marlin02.farm":
+    ip          => "77.77.77.162",
+    host_aliases => "marlin02",
+}
+
 #firewall manage
 service { "iptables":
     ensure => running,
@@ -26,13 +42,25 @@ Firewall {
 
 class { "basic_firewall": }
 
-#write own selinux lib -> this rm link /etc/sysconfig/selinux -> /etc/selinux/config
-#class { "selinux": 
-#    mode => "disabled"
-#}
-
-#extra
+# Extra
 class { "apache": }
-#edit /etc/hosts -> add 77.77.77.50 canoe.me canoe.to
+# Add to /etc/hosts on your host: 77.77.77.171 canoe.me canoe.to marlinschool.me
+apache::jvm_vhost { "marlinschool.me": }
 apache::vhost { "canoe.me": }
+file { "/var/www/html/canoe.me/index.html":
+    ensure  => file,
+    owner   => "root",
+    group   => "apache",
+    mode    => "0640",
+    content => "<html>vhost - canoe.me</html>",
+    require => Apache::Vhost["canoe.me"],
+}
 apache::vhost { "canoe.to": }
+file { "/var/www/html/canoe.to/index.html":
+    ensure  => file,
+    owner   => "root",
+    group   => "apache",
+    mode    => "0640",
+    content => "<html>vhost - canoe.to</html>",
+    require => Apache::Vhost["canoe.to"],
+}

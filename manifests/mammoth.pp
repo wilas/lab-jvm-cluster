@@ -78,6 +78,7 @@ file { "/root/.pgpass":
     source => "/vagrant/tools/pgpass-root",
 }
 
+#Insert some data into testme db
 exec { 'su - postgres -c "psql -d testme -U testme -f /vagrant/samples/simple_app/database/testme.sql"':
     path => "/bin:/sbin:/usr/bin:/usr/sbin",
     require => Postgresql::Db["testme"],

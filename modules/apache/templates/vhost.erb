@@ -8,19 +8,14 @@
     ErrorLog logs/<%= vhost_domain %>-error_log
     CustomLog logs/<%= vhost_domain %>-access_log common
 
-    <Directory /var/www/html/<%= vhost_domain %>>
+    <Directory <%= vhost_root %>>
         Allow from all
         Options +Includes +Indexes +FollowSymLinks
         AllowOverride all
     </Directory>
 
-    #<Location /test>
-    #    Order allow,deny
-    #    Allow from all
-    #</Location>
-
     #RewriteEngine On
-    #RewriteRule ^(.*$) https://magellan.kkk.pl$1
+    #RewriteRule ^(.*$) https://kkk.pl$1
 
 </VirtualHost>
 

@@ -1,0 +1,40 @@
+<VirtualHost *:80>
+
+    ServerName <%= vhost_domain %>
+    ServerAlias www.<%= vhost_domain %>
+    ServerAdmin admin@<%= vhost_domain %>
+
+    ErrorLog logs/<%= vhost_domain %>-error_log
+    CustomLog logs/<%= vhost_domain %>-access_log common
+
+    ProxyTimeout 120
+    Timeout 120
+
+    <Proxy ∗>
+        Order deny,allow
+        Allow from all
+    </Proxy>
+    <Proxy balancer://marlinSchool>
+        BalancerMember ajp://marlin01:8009 route=jvm01 loadfactor=100 retry=60
+        BalancerMember ajp://marlin02:8009 route=jvm02 loadfactor=100 retry=60
+        ProxySet lbmethod=bytraffic
+        ProxySet stickysession=JSESSIONID
+    </Proxy>
+    ProxyPass /balancer-manager !
+    ProxyPass /server-status !
+    ProxyPass / balancer://marlinSchool/
+    ProxyStatus On
+    
+    <Location /server-status>
+        SetHandler server-status
+        Order deny,allow
+        Allow from all
+    </Location>
+    <Location /balancer-manager>
+        SetHandler balancer-manager
+        Order deny,allow
+        Allow from all
+    </Location>
+
+</VirtualHost>
+

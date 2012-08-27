@@ -20,6 +20,7 @@ class apache {
         subscribe  => [ File["/etc/httpd/conf/httpd.conf"], File["/etc/httpd/conf.d"] ],
     }
 
+    #update: DefaultType text/html
     file {
         "/etc/httpd/conf/httpd.conf":
             ensure  => file,

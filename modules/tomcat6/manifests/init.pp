@@ -10,7 +10,7 @@
 
 #Manage firewall in node definition
 
-class tomcat6 {
+class tomcat6 ( $jvmroute="" ) {
 
     $version = "6.0.35"
     $jvm_home = "/usr/lib/jvm/java/"
@@ -21,7 +21,15 @@ class tomcat6 {
     $engine_dir = "${catalina_home}/conf/Catalina"
     #$virthost_list = [] -> create server.xml from template
 
-    #future: install openjdk 7
+    if $jvmroute == ""{
+        $engine_opt = "<Engine name=\"Catalina\" defaultHost=\"localhost\">"
+    }
+    else { 
+        $engine_opt = "<Engine name=\"Catalina\" defaultHost=\"localhost\" jvmRoute=\"${jvmroute}\">"
+    }
+
+
+    #future todo: install openjdk 7
     package { "java":
         name   => ["java-1.6.0-openjdk", "java-1.6.0-openjdk-devel"],
         ensure => installed,
@@ -122,7 +130,8 @@ class tomcat6 {
         group   => "${catalina_user}",
         mode    => 0600,
         notify  => Service["tomcatd"],
-        source  => "puppet:///modules/tomcat6/conf/server.xml",
+        #source  => "puppet:///modules/tomcat6/conf/server.xml",
+        content => template("tomcat6/conf/server.xml.erb"),
         require => [User["${catalina_user}"],File["${catalina_home}","${engine_dir}"],Virt_host["localhost"]],
     }
     
@@ -173,8 +182,9 @@ class tomcat6 {
 
         #notice("Mirror, mirror, tell me true: ${tomcat6::catalina_home}")
     
-        #TODO:
+        #TODO !!!:
         #add host entry to server.xml ~> augeas ??
+        #Define the default virtual host
         #<Host name="$host_name"    appBase="$appBase"/>
 
         $host_name = $name
@@ -234,6 +244,7 @@ class tomcat6 {
         }
     }
 
+    #!!! manual: Define the default virtual host in server.xml -> TODO !!!
     virt_host { "localhost":
         appBase   => "my_webapps",
         warBase   => "my_wars",
