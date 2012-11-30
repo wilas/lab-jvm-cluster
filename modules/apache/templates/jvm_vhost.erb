@@ -14,7 +14,7 @@
         Order deny,allow
         Allow from all
     </Proxy>
-    <Proxy balancer://marlinSchool>
+    <Proxy balancer://shoal>
         BalancerMember ajp://marlin01:8009 route=jvm01 loadfactor=100 timeout=10 retry=30
         BalancerMember ajp://marlin02:8009 route=jvm02 loadfactor=100 timeout=10 retry=30
         ProxySet lbmethod=bytraffic
@@ -22,7 +22,7 @@
     </Proxy>
     ProxyPass /balancer-manager !
     ProxyPass /server-status !
-    ProxyPass / balancer://marlinSchool/
+    ProxyPass / balancer://shoal/
     ProxyStatus On
     
     <Location /server-status>

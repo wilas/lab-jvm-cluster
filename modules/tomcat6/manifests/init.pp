@@ -248,7 +248,7 @@ class tomcat6 ( $jvmroute="" ) {
     virt_host { "localhost":
         appBase   => "my_webapps",
         warBase   => "my_wars",
-        appSource => '/vagrant/samples/simple_app',
+        appSource => '/vagrant/samples/java_app',
         notify    => Service["tomcatd"],
         require   => File["${engine_dir}"]
     }
@@ -257,7 +257,7 @@ class tomcat6 ( $jvmroute="" ) {
     #virt_host { "localhost2":
     #    appBase   => "my_webapps2",
     #    warBase   => "my_wars2",
-    #    appSource => '/vagrant/samples/simple_app',
+    #    appSource => '/vagrant/samples/java_app',
     #    notify    => Service["tomcatd"],
     #    require   => File["${engine_dir}"]
     #}

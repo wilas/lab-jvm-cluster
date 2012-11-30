@@ -3,12 +3,12 @@ Provisioning, deployment and clustering of Java Web Applications using puppet.
 
 ## VM description:
  - OS: Scientific linux 6
- - apache vm: canoe01
- - tomcat vm: marlin01, marlin02
- - postgresql vm: mammoth
+ - apache vm: canoe01.farm
+ - tomcat vm: marlin01.farm, marlin02.farm
+ - postgresql vm: mammoth.farm
 
 ## Additional configuration (on host machine):
- - Add into /etc/hosts on your host machine: 77.77.77.171 canoe.me canoe.to marlinschool.me
+ - Add into /etc/hosts on your host machine: 77.77.77.171 canoe_red.qq canoe_blue.qq bering.sea
 
 ## Step by step:
  - create SL64_box
@@ -18,19 +18,18 @@ Provisioning, deployment and clustering of Java Web Applications using puppet.
  - vagrant destroy
 
 ## Urls:
- - apache: marlinschool.me (localhost:7081)
+ - apache: bering.sea (localhost:7081)
  - tomcat: localhost:6881, localhost:6882
- - context: ...
+ - context: /ship_red /ship_blue /lighthouse
 
 ## Webapps descriptions (url_to_scr):
+ - java_ship_app: ...
+ - welcome_jsp: ...
  - welcome_servlet: ...
- - simple_db: ...
- - servlet_me: ...
- - simple_dynamo: ...
 
 ## Tests:
- - apache benchmark (yum install httpd-tools): ab -n 10000 -c 5 http://marlinschool.me/testme/SimpleSearch
- - jmeter: ...
+ - apache benchmark (yum install httpd-tools): ab -n 10000 -c 5 http://bering.sea/ship_red/winemenu
+ - jmeter: link
 
 ## Bibliography:
 

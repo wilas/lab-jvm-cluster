@@ -1,28 +1,26 @@
-stage { "first": before => Stage["main"] }
+stage { "base": before => Stage["main"] }
 stage { "last": require => Stage["main"] }
 
-#basic
-class { "install_repos": stage  => "first" }
-class { "basic_package": }
-class { "user::root": }
+# Basic
+class { "install_repos": stage => "base" }
+class { "basic_package": stage => "base" }
+class { "user::root": stage    => "base" }
 
-#hosts:
+# Hosts
 host { "$fqdn":
     ip          => "$ipaddress_eth1",
     host_aliases => "$hostname",
 }
-
 host { "marlin01.farm":
     ip          => "77.77.77.161",
     host_aliases => "marlin01",
 }
-
 host { "marlin02.farm":
     ip          => "77.77.77.162",
     host_aliases => "marlin02",
 }
 
-#firewall manage
+# Firewall Manage
 service { "iptables":
     ensure => running,
     enable => true,
@@ -39,28 +37,37 @@ Firewall {
     subscribe => Exec['clear-firewall'],
     notify => Exec['persist-firewall'],
 }
-
 class { "basic_firewall": }
 
+
 # Extra
+# Apache Manage
 class { "apache": }
-# Add to /etc/hosts on your host: 77.77.77.171 canoe.me canoe.to marlinschool.me
-apache::jvm_vhost { "marlinschool.me": }
-apache::vhost { "canoe.me": }
-file { "/var/www/html/canoe.me/index.html":
-    ensure  => file,
-    owner   => "root",
-    group   => "apache",
-    mode    => "0640",
-    content => "<html>vhost - canoe.me</html>",
-    require => Apache::Vhost["canoe.me"],
+firewall { "100 allow apache":
+        state  => ['NEW'],
+        dport  => '80',
+        proto  => 'tcp',
+        action => accept,
 }
-apache::vhost { "canoe.to": }
-file { "/var/www/html/canoe.to/index.html":
+
+# Add to /etc/hosts on your host (e.g. desktop): 77.77.77.171 canoe_red.qq canoe_blue.qq bering.sea
+apache::jvm_vhost { "bering.sea": }
+
+apache::vhost { "canoe_red.qq": }
+file { "/var/www/html/canoe_red.qq/index.html":
     ensure  => file,
     owner   => "root",
     group   => "apache",
     mode    => "0640",
-    content => "<html>vhost - canoe.to</html>",
-    require => Apache::Vhost["canoe.to"],
+    content => "<html>vhost - canoe_red.qq</html>",
+    require => Apache::Vhost["canoe_red.qq"],
+}
+apache::vhost { "canoe_blue.qq": }
+file { "/var/www/html/canoe_blue.qq/index.html":
+    ensure  => file,
+    owner   => "root",
+    group   => "apache",
+    mode    => "0640",
+    content => "<html>vhost - canoe_blue.qq</html>",
+    require => Apache::Vhost["canoe_blue.qq"],
 }

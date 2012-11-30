@@ -1,7 +1,3 @@
-#
-#!!! set firewall rules in proper db_node configuration or in other specific module
-#
-
 class postgresql::sl_install ( $version, $listen, $port ) {
 
     $database_directory = "/var/lib/pgsql/${version}/data"

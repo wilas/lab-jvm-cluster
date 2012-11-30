@@ -1,85 +1,88 @@
-stage { "base": before => Stage["main"] }
+stage { "base": before   => Stage["tuning"] }
 stage { "tuning": before => Stage["main"] }
-stage { "last": require => Stage["main"] }
+stage { "last": require  => Stage["main"] }
 
-#basic
+# Basic
 class { "install_repos": stage => "base" }
 class { "basic_package": stage => "base" }
-class { "user::root": stage    => "base"}
+class { "user::root": stage    => "base" }
 
-#hosts:
+# Hosts
 host { "$fqdn":
-    ip          => "$ipaddress_eth1",
+    ip           => "$ipaddress_eth1",
     host_aliases => "$hostname",
 }
 
-#firewall manage
+# Firewall manage
 service { "iptables":
     ensure => running,
     enable => true,
 }
-
 exec { 'clear-firewall':
-    command => '/sbin/iptables -F',
+    command     => '/sbin/iptables -F',
     refreshonly => true,        
 }
-
 exec { 'persist-firewall':
-    command => '/sbin/iptables-save >/etc/sysconfig/iptables',
+    command     => '/sbin/iptables-save >/etc/sysconfig/iptables',
     refreshonly => true,
 }
-
 Firewall {
     subscribe => Exec['clear-firewall'],
-    notify => Exec['persist-firewall'],
+    notify    => Exec['persist-firewall'],
 }
-
 class { "basic_firewall": }
 
-#DB manage
+
+# Extra
+# Database server manage
+# postgresql instance must be created first -> so use stage
 class { "postgresql":
     version => "9.1",
     listen  => "localhost, 77.77.77.150",
     port    => "5432",
     stage   => "tuning",
 }
-
-firewall { '100 allow postgresql':
-    state  => ['NEW'],
-    dport  => '5432',
-    proto  => 'tcp',
+# firewall rule can't be inside class postgresql, because require same
+# stage as exec clear/persist-firewall
+firewall { "100 allow postgresql":
+    state  => ["NEW"],
+    dport  => "5432",
+    proto  => "tcp",
     action => accept,
 }
+file { "/var/lib/pgsql/sql_sesame":
+    ensure  => directory,
+    mode    => "0644",
+    owner   => "postgres",
+    group   => "postgres",
+}
 
-#
-#fix it -> should also update user
-#ALTER USER postgres WITH PASSWORD '${POSTGRESQL_POSTGRES_PASSWORD}';
-#
+
+# TODO: any change should also update user
+# ALTER USER postgres WITH PASSWORD '${POSTGRESQL_POSTGRES_PASSWORD}';
 pg_user { 'cave':
     ensure   => present,
     password => 'cave',
 }
-
 pg_database { 'cave':
     ensure  => present,
     owner   => 'cave',
     require => Pg_user['cave'],
 }
 
-postgresql::db { 'testme':
-    password => 'testme',
+postgresql::db { 'wine_cellar':
+    password => 'wine_cellar',
 }
-
-file { "/root/.pgpass":
+file { "/var/lib/pgsql/sql_sesame/winelist.sql":
     ensure => file,
-    owner  => "root",
-    group  => "root",
-    mode   => 0600,
-    source => "/vagrant/tools/pgpass-root",
+    mode   => "0644",
+    owner  => "postgres",
+    group  => "postgres",
+    source => "/vagrant/samples/java_app/database/winelist.sql",
 }
-
-#Insert some data into testme db
-exec { 'su - postgres -c "psql -d testme -U testme -f /vagrant/samples/simple_app/database/testme.sql"':
-    path => "/bin:/sbin:/usr/bin:/usr/sbin",
-    require => Postgresql::Db["testme"],
+exec { 'su - postgres -c "psql -d wine_cellar -U wine_cellar -f /var/lib/pgsql/sql_sesame/winelist.sql"':
+    path        => "/bin:/sbin:/usr/bin:/usr/sbin",
+    refreshonly => true,
+    subscribe   => File["/var/lib/pgsql/sql_sesame/winelist.sql"],
+    require     => Postgresql::Db["wine_cellar"],
 }

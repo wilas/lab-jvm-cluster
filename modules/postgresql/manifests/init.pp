@@ -1,22 +1,13 @@
-# Class: postgresql
+# TODO: 
+# - auto backup
+# - refresh_db (dropdb + restoredb) (restore from last filename from given backup_dir or restore from given filename)
+# - manage pg_hba using augeas
 #
-# This module manages postgresql9 on Scientific Linux 6.X
+# Remember to set up firewall rules in db_node configuration or in other specific module
 #
-# Parameters:
-#
-# Actions:
-#
-# Requires:
-#
-# Sample Usage:
-#
-# [Remember: No empty lines between comments and class definition]
-
-#TODO: auto backup, refresh_db(drop+restore) (give dir with backup and restore last or filename), pg_hba augeas
-
 class postgresql ( $version="9.1", $listen="localhost", $port="5432" ) {
 
-	#Checking operating system
+	# Checking operating system
 	case $operatingsystem {
 		Scientific: {
 			if $operatingsystemrelease >= "6.0" {
@@ -29,5 +20,4 @@ class postgresql ( $version="9.1", $listen="localhost", $port="5432" ) {
 		}
 		default: { notice "Unsupported operatingsystem ${operatingsystem}" }
 	}
-
 }

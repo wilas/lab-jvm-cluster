@@ -1,13 +1,12 @@
 stage { "base": before => Stage["main"] }
-stage { "tuning": before => Stage["main"] }
 stage { "last": require => Stage["main"] }
 
-#basic
+# Basic
 class { "install_repos": stage => "base" }
 class { "basic_package": stage => "base" }
 class { "user::root": stage    => "base"}
 
-#hosts:
+# Hosts
 host { "$fqdn":
     ip          => "$ipaddress_eth1",
     host_aliases => "$hostname",
@@ -18,7 +17,7 @@ host { "mammoth.farm":
     host_aliases => "mammoth",
 }
 
-#firewall manage
+# Firewall Manage
 service { "iptables":
     ensure => running,
     enable => true,
@@ -37,14 +36,15 @@ Firewall {
 }
 class { "basic_firewall": }
 
-#tomcat manage
+
+# Extra
+# Tomcat Manage
 $routeid = regsubst($hostname,'([\w]+)([0-9]{2})','\2','G')
 notice ("Mirror, mirror, tell me true: routeid is ${routeid}")
 
 class { "tomcat6": 
     jvmroute => "jvm${routeid}",
 }
-
 firewall { '100 allow tomcat http':
     state  => ['NEW'],
     dport  => '8080',

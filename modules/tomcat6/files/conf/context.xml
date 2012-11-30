@@ -32,9 +32,9 @@
     <Valve className="org.apache.catalina.valves.CometConnectionManagerValve" />
     -->
     
-    <Resource name="jdbc/testme" auth="Container"
+   <Resource name="jdbc/wine_cellar" auth="Container"
 	  type="javax.sql.DataSource" driverClassName="org.postgresql.Driver"
-	  url="jdbc:postgresql://mammoth/testme"
-	  username="testme" password="testme" maxActive="10" maxIdle="5" maxWait="-1"/>
+	  url="jdbc:postgresql://mammoth/wine_cellar"
+	  username="wine_cellar" password="wine_cellar" maxActive="10" maxIdle="5" maxWait="-1"/>
 
 </Context>

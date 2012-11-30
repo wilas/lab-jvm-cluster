@@ -3,14 +3,7 @@ class apache {
     package { "httpd":
         ensure => installed,
     }
-
-    firewall { "100 allow apache":
-        state  => ['NEW'],
-        dport  => '80',
-        proto  => 'tcp',
-        action => accept,
-    }
-
+    
     service { "httpd":
         ensure     => running,
         enable     => true,
@@ -20,7 +13,7 @@ class apache {
         subscribe  => [ File["/etc/httpd/conf/httpd.conf"], File["/etc/httpd/conf.d"] ],
     }
 
-    #update: DefaultType text/html
+    # Update default httpd: DefaultType text/html
     file {
         "/etc/httpd/conf/httpd.conf":
             ensure  => file,
