@@ -45,6 +45,20 @@ notice ("Mirror, mirror, tell me true: routeid is ${routeid}")
 class { "tomcat6": 
     jvmroute => "jvm${routeid}",
 }
+# localhost is the default virtual host in server.xml -> manualy add other - sorry - TODO !!!
+tomcat6::virt_host { "localhost":
+    appBase   => "my_webapps",
+    warBase   => "my_wars",
+    appSource => "/vagrant/samples/java_app",
+}
+# test for multiple virt_host:
+#tomcat6::virt_host { "localhost2":
+# appBase   => "my_webapps2",
+# warBase   => "my_wars2",
+# appSource => '/vagrant/samples/java_app',
+#}
+
+
 firewall { '100 allow tomcat http':
     state  => ['NEW'],
     dport  => '8080',
