@@ -30,20 +30,20 @@ Check on at least 2 webbrowsers to see how load_balancer work or use apache benc
 Try stop one tomcatd service and check again.
 
  - apache (load_balancer):
-    - bering.sea                    # welcome_jsp
-    - bering.sea/lighthouse         # welcome_servlet
-    - bering.sea/ship_red           # java_ship_app
-    - bering.sea/ship_blue          # java_ship_app
-    - bering.sea/server-status
-    - bering.sea/balancer-manager
-    - canoe_red.qq                  # example apache v_host
-    - canoe_blue.qq                 # example apache v_host
-    - localhost:7081
+    - http://bering.sea                    # welcome_jsp
+    - http://bering.sea/lighthouse         # welcome_servlet
+    - http://bering.sea/ship_red           # java_ship_app
+    - http://bering.sea/ship_blue          # java_ship_app
+    - http://bering.sea/server-status
+    - http://bering.sea/balancer-manager
+    - http://canoe_red.qq                  # example apache v_host
+    - http://canoe_blue.qq                 # example apache v_host
+    - http://localhost:7081
  - tomcat:
-    - localhost:6881                # welcome_jsp on merlin01
-    - localhost:6881/ship_red       # java_ship_app on merlin01
-    - localhost:6882                # welcome_jsp on merlin02
-    - localhost:6882/ship_red       # java_ship_app on merlin02
+    - http://localhost:6881                # welcome_jsp on merlin01
+    - http://localhost:6881/ship_red       # java_ship_app on merlin01
+    - http://localhost:6882                # welcome_jsp on merlin02
+    - http://localhost:6882/ship_red       # java_ship_app on merlin02
 
 ## App Deployment:
 
@@ -70,9 +70,9 @@ contex change:
 
 ```
     mv samples/java_app/context/lighthouse.xml .
-    vagrant provision #then look into bering.sea/lighthouse
+    vagrant provision   #then look into bering.sea/lighthouse
     mv lighthouse.xml samples/java_app/context/
-    vagrant provision #then look into bering.sea/lighthouse
+    vagrant provision   #then look into bering.sea/lighthouse
 ```
 
 src change:
