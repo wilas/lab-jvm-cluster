@@ -54,7 +54,6 @@ Deployment are automated and made by puppet tomcat6::virt_host definition.
 Puppet detect if $appSource/context or $appSource/wars directory were changed and apply those modyfications to tomcat server.
 
 Procedure step by step (after change detection):
-
  - stop tomcatd service
  - clean old appBase
  - deploy new app (new_wars in warBase)
@@ -70,7 +69,6 @@ Example virt_host definition:
         warBase   => "my_wars",
         appSource => "/vagrant/samples/java_app",
     }
-
 ```
 
 ### Deployment play:
