@@ -49,11 +49,29 @@ Try stop one tomcatd service and check again.
 
 ### Deployment procedure:
 
+Deployment are automated and made by puppet tomcat6::virt_host definition. 
+
+Puppet detect if $appSource/context or $appSource/wars directory were changed and apply those modyfications to tomcat server.
+
+Procedure step by step (after change detection):
+
  - stop tomcatd service
  - clean old appBase
  - deploy new app (new_wars in warBase)
  - deploy new contex
  - start tomcatd service
+
+Example virt_host definition:
+
+```ruby
+
+    tomcat6::virt_host { "localhost":
+        appBase   => "my_webapps",
+        warBase   => "my_wars",
+        appSource => "/vagrant/samples/java_app",
+    }
+
+```
 
 ### Deployment play:
 
