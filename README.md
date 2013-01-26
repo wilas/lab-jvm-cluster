@@ -96,8 +96,8 @@ src change:
 ```
     Import each app to eclipse
     modify sth in source code
-    export war to proper place
-    deploy app (vagrant prosiosion)
+    export app as war to proper place
+    deploy app (vagrant provision)
 ```
 
 ## Webapps descriptions:
